@@ -1,7 +1,19 @@
 use std::fs;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::collections::VecDequeue;
+/*
 
+ok so how do we want this code to work?
+
+1. load all the files paths that we want to run through
+2. loop through each of the files:
+    - initialize an empty board to play on
+    - load up the file as a string
+    - pass through the string and make moves on the board, w / black
+    - if a group is captured then we should remove it and continue playing pieces
+    - save each unique board state / the winner of the game
+*/
 
 //static MOVE_MAP: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
 
@@ -61,6 +73,9 @@ fn process_file(path: String) {
 
                 }
             }
+
+            let board_copy = &mut grid;
+            remove_dead_stones(board_copy);
         }
     
         idx += 1;
@@ -78,12 +93,15 @@ fn process_file(path: String) {
         }
         println!();
     }
+}
 
-    // try and load the file contents
 
-    // need to parse the file to get the game parameters
+fn remove_dead_stones(board: &mut [[i32; 9]; 9]) {
+    println!("we have the board");
 
-    // need to parse the file to get the turn and moves of the users
+    // init a set, to store visited locations
+
+    // need a queue 
 }
 
 
@@ -112,4 +130,11 @@ fn main() {
 
     println!("Files Loaded: {}", num_files);
 
+    print();
+
+}
+
+
+fn print() {
+    println!("hello, world!");
 }
