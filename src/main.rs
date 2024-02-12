@@ -22,7 +22,7 @@ ok so how do we want this code to work?
 
 
 fn create_map() -> HashMap<char, usize> {
-    let chars = vec!['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
+    let chars = vec!['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'];
     let mut move_map = HashMap::with_capacity(chars.len());
 
     for (index, &char) in chars.iter().enumerate() {
@@ -60,7 +60,7 @@ fn process_file(path: String) {
             match (p1_option, p2_option) {
                 (Some(&p1), Some(&p2)) => {
                     // Both p1 and p2 are found, proceed with the move
-                    //println!("{} moved to location: {} {}", chars[idx], p1, p2);
+                    //
 
                     // if black then set to -1, if white set to 1
                     if chars[idx] == 'B' && p1 < 9 && p2 < 9{
@@ -74,7 +74,6 @@ fn process_file(path: String) {
                     }
                 },
                 _ => {
-
                 }
             }
 
@@ -196,8 +195,6 @@ fn main() {
 
     println!("Files Loaded: {}", num_files);
 
-    print();
-
     let mut duration = start.elapsed(); // Calculate the elapsed time
 
     println!("Time taken: {:?}", duration); // Print the duration
@@ -206,9 +203,4 @@ fn main() {
     println!("Time taken per game (ms): {:?}", duration.as_millis() / num_files);
 
 
-}
-
-
-fn print() {
-    println!("hello, world!");
 }
