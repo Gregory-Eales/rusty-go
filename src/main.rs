@@ -1,7 +1,7 @@
 use std::fs;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::collections::VecDequeue;
+// use std::collections::VecDequeue;
 /*
 
 ok so how do we want this code to work?
@@ -18,6 +18,18 @@ ok so how do we want this code to work?
 //static MOVE_MAP: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
 
 // actually we want a hashmap that maps a : 0, b : 1, c : 2, etc
+
+
+// define a const BLACK = -1, WHITE = 1
+// define a const EMPTY = 0
+// we can do this using: enum Color { BLACK = -1, WHITE = 1, EMPTY = 0 }
+enum Color {
+    BLACK = -1,
+    WHITE = 1,
+    EMPTY = 0
+}
+
+
 
 fn create_map() -> HashMap<char, usize> {
     let chars = vec!['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
@@ -101,7 +113,45 @@ fn remove_dead_stones(board: &mut [[i32; 9]; 9]) {
 
     // init a set, to store visited locations
 
+    for i in 0..9 {
+        for j in 0..9{
+            // initialize a hashset
+            let mut visited: HashSet<(usize, usize)> = HashSet::new();
+            visit_stones(i, j, visited, board);
+
+        }
+    }
+
     // need a queue 
+}
+
+// takes in a visited HashSet refrence that we fill
+// with board positions
+fn visit_stones(i: usize, j: usize, visited: HashSet<(usize, usize)>, board: &mut [[i32; 9]; 9]) {
+    // if we are in an out of bounds position then we
+    // should exit out
+
+    if i < 0 || i >= 9 || j < 0 || j >= 9 {
+        return False;
+    }
+
+    // if already visited then return;
+    if visited.contains(&(i, j)) {
+        return False;
+    }
+
+    // if the board position is empty then return
+    if board[i][j] == 0 {
+        return True;
+    }
+
+    // add board position to visited
+    visited.insert((i, j));
+
+    let left = visit_stones(i-1, j, visited, board);
+    let right = visit_stones(i+1, j, visited, board);
+    let up = visit_stones(i, j-1, visited, board);
+    let down = visit_stones(i, j+1, visited, board);
 }
 
 
