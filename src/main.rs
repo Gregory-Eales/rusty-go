@@ -1,6 +1,7 @@
 use std::fs;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::time::Instant;
 // use std::collections::VecDequeue;
 /*
 
@@ -18,17 +19,6 @@ ok so how do we want this code to work?
 //static MOVE_MAP: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
 
 // actually we want a hashmap that maps a : 0, b : 1, c : 2, etc
-
-
-// define a const BLACK = -1, WHITE = 1
-// define a const EMPTY = 0
-// we can do this using: enum Color { BLACK = -1, WHITE = 1, EMPTY = 0 }
-enum Color {
-    BLACK = -1,
-    WHITE = 1,
-    EMPTY = 0
-}
-
 
 
 fn create_map() -> HashMap<char, usize> {
@@ -70,15 +60,17 @@ fn process_file(path: String) {
             match (p1_option, p2_option) {
                 (Some(&p1), Some(&p2)) => {
                     // Both p1 and p2 are found, proceed with the move
-                    println!("{} moved to location: {} {}", chars[idx], p1, p2);
+                    //println!("{} moved to location: {} {}", chars[idx], p1, p2);
 
                     // if black then set to -1, if white set to 1
                     if chars[idx] == 'B' && p1 < 9 && p2 < 9{
                         grid[p1][p2] = 1;
+                        remove_dead_stones(&mut grid, 1, p1, p2);
                     }
                     
                     if chars[idx] == 'W' && p1 < 9 && p2 < 9 {
                         grid[p1][p2] = -1;
+                        remove_dead_stones(&mut grid, -1, p1, p2);
                     }
                 },
                 _ => {
@@ -86,8 +78,7 @@ fn process_file(path: String) {
                 }
             }
 
-            //let board_copy = &mut grid;
-            remove_dead_stones(&mut grid);
+            
         }
     
         idx += 1;
@@ -105,25 +96,26 @@ fn process_file(path: String) {
         }
         println!();
     }
+    println!();
+    println!();
 }
 
 
-fn remove_dead_stones(board: &mut [[i32; 9]; 9]) {
-    println!("we have the board");
-
-    // init a set, to store visited locations
-
-    for i in 0..9 {
-        for j in 0..9{
-            let mut visited: HashSet<(usize, usize)> = HashSet::new();
-            let color = board[i][j];
-            if !visit_stones(color, i, j, &mut visited, board) {
-                println!("we will be removing some stones!");
-                for &(i, j) in visited.iter() {
-                    board[i][j] = 0;
-                }
+fn remove_dead_stones(board: &mut [[i32; 9]; 9], color: i32, i: usize, j: usize) {
+    // check the adjacent positions to see if any stones were captured
+    let mut positions = HashSet::from([(i+1, j), (i, j+1)]);
+    if i > 0 {
+        positions.insert((i-1, j));
+    }
+    if j > 0 {
+        positions.insert((i, j-1));
+    }
+    for (x, y) in positions {
+        let mut visited: HashSet<(usize, usize)> = HashSet::new();
+        if !visit_stones(color, x, y, &mut visited, board) {
+            for &(a, b) in visited.iter() {
+                board[a][b] = 0;
             }
-            //println!("Visited: {:?}", visited);
         }
     }
 }
@@ -134,7 +126,7 @@ fn visit_stones(color : i32, i: usize, j: usize, visited: &mut HashSet<(usize, u
     // if we are in an out of bounds position then we
     // should exit out
 
-    if i < 0 || i >= 9 || j < 0 || j >= 9 {
+    if i >= 9 || j >= 9 {
         return true;
     }
 
@@ -190,19 +182,29 @@ fn main() {
 
     let mut num_files = 0;
 
+    let start = Instant::now();
+
     for path in paths {
 
         let path_str = path.unwrap().path().display().to_string();
 
-        //println!("Name: {}", path_str);
+        println!("Name: {}", path_str);
         num_files += 1;
-
         process_file(path_str);
+        //break;
     }
 
     println!("Files Loaded: {}", num_files);
 
     print();
+
+    let mut duration = start.elapsed(); // Calculate the elapsed time
+
+    println!("Time taken: {:?}", duration); // Print the duration
+    // If you want a specific unit, like milliseconds, you can do:
+    println!("Time taken (milliseconds): {:?}", duration.as_millis());
+    println!("Time taken per game (ms): {:?}", duration.as_millis() / num_files);
+
 
 }
 
