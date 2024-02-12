@@ -86,8 +86,8 @@ fn process_file(path: String) {
                 }
             }
 
-            let board_copy = &mut grid;
-            remove_dead_stones(board_copy);
+            //let board_copy = &mut grid;
+            remove_dead_stones(&mut grid);
         }
     
         idx += 1;
@@ -115,43 +115,65 @@ fn remove_dead_stones(board: &mut [[i32; 9]; 9]) {
 
     for i in 0..9 {
         for j in 0..9{
-            // initialize a hashset
             let mut visited: HashSet<(usize, usize)> = HashSet::new();
-            visit_stones(i, j, visited, board);
-
+            let color = board[i][j];
+            if !visit_stones(color, i, j, &mut visited, board) {
+                println!("we will be removing some stones!");
+                for &(i, j) in visited.iter() {
+                    board[i][j] = 0;
+                }
+            }
+            //println!("Visited: {:?}", visited);
         }
     }
-
-    // need a queue 
 }
 
 // takes in a visited HashSet refrence that we fill
-// with board positions
-fn visit_stones(i: usize, j: usize, visited: HashSet<(usize, usize)>, board: &mut [[i32; 9]; 9]) {
+// with board positions. returns bool
+fn visit_stones(color : i32, i: usize, j: usize, visited: &mut HashSet<(usize, usize)> , board: &[[i32; 9]; 9]) -> bool {
     // if we are in an out of bounds position then we
     // should exit out
 
     if i < 0 || i >= 9 || j < 0 || j >= 9 {
-        return False;
+        return true;
     }
 
     // if already visited then return;
     if visited.contains(&(i, j)) {
-        return False;
+        return true;
+    }
+
+    // if the board position is not the same color then return
+    if board[i][j] != color {
+        return true;
     }
 
     // if the board position is empty then return
     if board[i][j] == 0 {
-        return True;
+        return false;
     }
 
     // add board position to visited
     visited.insert((i, j));
 
-    let left = visit_stones(i-1, j, visited, board);
-    let right = visit_stones(i+1, j, visited, board);
-    let up = visit_stones(i, j-1, visited, board);
-    let down = visit_stones(i, j+1, visited, board);
+    
+    let right = visit_stones(color, i+1, j, visited, board);
+    let down = visit_stones(color, i, j+1, visited, board);
+    let mut left = true;
+    let mut up = true;
+
+    if j > 0 {
+        up = visit_stones(color, i, j-1, visited, board);
+    }
+    if i > 0 {
+        left = visit_stones(color, i-1, j, visited, board);
+    }
+
+    if left && right && up && down {
+        return true;
+    }
+
+    false
 }
 
 
