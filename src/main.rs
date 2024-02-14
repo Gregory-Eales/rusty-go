@@ -1,25 +1,11 @@
-use std::fs;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::time::Instant;
+use std::fs::File;
+use std::fs;
+
 use indicatif::ProgressBar;
-// use std::collections::VecDequeue;
-/*
-
-ok so how do we want this code to work?
-
-1. load all the files paths that we want to run through
-2. loop through each of the files:
-    - initialize an empty board to play on
-    - load up the file as a string
-    - pass through the string and make moves on the board, w / black
-    - if a group is captured then we should remove it and continue playing pieces
-    - save each unique board state / the winner of the game
-*/
-
-//static MOVE_MAP: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k'];
-
-// actually we want a hashmap that maps a : 0, b : 1, c : 2, etc
+use csv::Writer;
 
 
 fn create_map() -> HashMap<char, usize> {
@@ -32,6 +18,7 @@ fn create_map() -> HashMap<char, usize> {
 
     move_map
 }
+
 
 fn process_file(path: String) {
     // takes in a string
